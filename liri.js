@@ -18,6 +18,7 @@ switch(command){
         spotifyThisSong(argument);
         break;
     case "movie-this":
+        movieThis(argument);
         break;
     case "do-what-it-says":
         break;   
@@ -70,3 +71,26 @@ function spotifyThisSong(song){
       });      
 }
 
+// OMDB API movie calls
+function movieThis(movie){
+    if(movie === ''){
+        movie = "Mr. Nobody";
+    }
+    var queryURL = "http://www.omdbapi.com/?t=" + movie + "&y=&plot=short&apikey=trilogy";
+    axios.get(queryURL).then(
+    function(response) {
+        console.log("Title: " + response.data.Title);
+        console.log("Year: " + response.data.Year);
+        console.log("IMDB rating: " + response.data.imdbRating);
+        var element;
+        for(element in response.data.Ratings){
+            if(response.data.Ratings[element].Source === "Rotten Tomatoes"){
+                console.log("Rotten Tomatoes rating: " + response.data.Ratings[element].Value);
+            }
+        }
+        console.log("Country: " + response.data.Country);
+        console.log("Language: " + response.data.Language);
+        console.log("Plot: " + response.data.Plot);
+        console.log("Actors: " + response.data.Actors);
+    });
+}
