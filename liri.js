@@ -3,6 +3,7 @@ var Spotify = require('node-spotify-api');
 var axios = require('axios');
 var moment = require('moment');
 var keys = require("./keys.js");
+var fs = require("fs");
 var spotify = new Spotify(keys.spotify);
 
 // grab command line arguments
@@ -10,6 +11,7 @@ var command = process.argv[2].toLowerCase();
 var argument = process.argv.splice(3).join(' ');
 
 // determine which command to run
+
 switch(command){
     case "concert-this":
         concertThis(argument);
@@ -21,10 +23,12 @@ switch(command){
         movieThis(argument);
         break;
     case "do-what-it-says":
+        doWhatItSays();
         break;   
     default:
         console.log(command + " is not a valid command.");
 }
+
 
 // find concert venues
 function concertThis(artist){
@@ -93,4 +97,46 @@ function movieThis(movie){
         console.log("Plot: " + response.data.Plot);
         console.log("Actors: " + response.data.Actors);
     });
+}
+
+// read file and perform action written in it
+function doWhatItSays(){
+    var cmd;
+    var arg;
+
+    fs.readFile('./random.txt', 'utf8', (err, data) => {
+        if (err) throw err;
+        {
+            console.log(data);
+            cmd = data.split(',')[0];                   // get command
+            arg = data.split(',')[1].replace(/"/g, ''); // get argument
+            cmd = camelCase(cmd);                       // convert cmd to camel case to match function names
+            callFunction(cmd, arg);                     // use callback to call function
+        }
+      });
+}
+
+// function used to call function listed in text file.
+function callFunction(callback, parameter){
+    var searchFunctions = ['concertThis','spotifyThisSong','movieThis'];
+    if(searchFunctions.indexOf(callback) !== -1){
+        callback = eval(callback);  // Must eval() string to use as callback
+        callback(parameter);
+    }
+    else{
+        console.log(`Error: ${callback} is not valid search function.`);
+    }
+}
+
+// make first letter in string upper case
+function camelCase(string) 
+{   string.toLowerCase();
+    var strings = string.split('-')
+    var camelCaseString = '';
+    camelCaseString += strings[0]
+
+    for(var i=1; i<strings.length; i++){
+        camelCaseString += strings[i].charAt(0).toUpperCase() + strings[i].slice(1);
+    }
+    return camelCaseString;  
 }
