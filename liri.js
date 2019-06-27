@@ -7,8 +7,8 @@ var fs = require("fs");
 var spotify = new Spotify(keys.spotify);
 
 // grab command line arguments
-var command = process.argv[2].toLowerCase();
-var argument = process.argv.splice(3).join(' ');
+var command = process.argv[2].toLowerCase().trim();
+var argument = process.argv.splice(3).join(' ').trim();
 
 // determine which command to run
 
@@ -32,7 +32,7 @@ switch(command){
 
 // find concert venues
 function concertThis(artist){
-    if(artist === undefined){
+    if(artist === ''){
         console.log("You must include an artist.");
     }
     else{
@@ -55,7 +55,7 @@ function concertThis(artist){
 
 // search Spotify for song
 function spotifyThisSong(song){
-    if(song === ""){
+    if(song === ''){
         song = "The Sign";    // default song    
     }
 
@@ -78,7 +78,7 @@ function spotifyThisSong(song){
 // OMDB API movie calls
 function movieThis(movie){
     if(movie === ''){
-        movie = "Mr. Nobody";
+        movie = "Mr. Nobody"; //default movie 
     }
     var queryURL = "http://www.omdbapi.com/?t=" + movie + "&y=&plot=short&apikey=trilogy";
     axios.get(queryURL).then(
